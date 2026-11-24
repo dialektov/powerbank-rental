@@ -4,15 +4,14 @@
 
 ## Сервисы
 
-| Сервис | Папка | Порт | Ответственный |
+| Сервис | Папка | Порт |
 |---|---|---|---|
-| rental-api (2 инстанса за nginx) | `rental_api/` | 8080 через nginx | Иван |
-| rental-worker | `rental_worker/` | 9100 (метрики) | друг |
-| external-stubs | `external_stubs/` | 3629 | друг |
-| PostgreSQL | `migrations/` | 5432 | Иван (схема) |
+| rental-api (2 инстанса за nginx) | `rental_api/` | 8080 через nginx |
+| rental-worker | `rental_worker/` | 9100 (метрики) |
+| external-stubs | `external_stubs/` | 3629 |
+| PostgreSQL | `migrations/` | 5432 |
 | Redis | — | 6379 | — |
-| nginx, Prometheus, Grafana | `deploy/` | 8080, 9090, 3000 | — |
-
+| nginx, Prometheus, Grafana | `deploy/` |
 ## Запуск
 
 ```bash
