@@ -12,3 +12,4 @@ venv/
 stubs.sqlite3
 stubs.sqlite3-wal
 stubs.sqlite3-shm
+/test-results/

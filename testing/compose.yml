@@ -1,0 +1,22 @@
+# Used with -f docker-compose.yml in a fresh Compose project for the demo.
+services:
+  postgres:
+    ports: !reset []
+    cpus: 1.0
+  redis:
+    ports: !reset []
+  external-stubs:
+    ports: !reset []
+    environment:
+      STUB_BILLING_TIME_SCALE: "60"
+  nginx:
+    ports: !reset []
+  harness:
+    build: ./testing
+    environment:
+      RENTAL_URL: http://nginx
+      STUBS_URL: http://external-stubs:3629
+      TEST_DATABASE_URL: postgresql://rental:rental@postgres:5432/rental
+      NO_PROXY: '*'
+    volumes:
+      - ${REPORT_DIR:?set REPORT_DIR}:/results

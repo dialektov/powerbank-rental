@@ -27,7 +27,7 @@ CONFIG = {
     "offer_ttl_sec": 300,
     "tariff_cache_ttl_sec": 600,
     "order_lease_sec": 10,
-    "billing_time_scale": 1,
+    "billing_time_scale": float(os.environ.get("STUB_BILLING_TIME_SCALE", "1")),
     "subscriber_min_free_period_min": 30,
 }
 
