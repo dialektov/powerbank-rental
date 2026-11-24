@@ -65,30 +65,3 @@ docker compose run --rm --build integration-tests
 5. **Внутренние ручки** `/internal/*` доступны только внутри docker-сети через `nginx:8081`. Снаружи порт 8080 их не пропускает.
 6. **Контракт заглушек** — раздел 5.4 ADR. Если меняете — сначала ADR, потом код.
 
-## Задачи
-
-### rental-api (Иван)
-
-- [x] `repo/`: offers, orders, payment_tasks (asyncpg, SQL)
-- [x] `clients/`: stations, tariffs (LRU), users (фоллбэк), payments, configs; таймауты, ретраи, circuit breaker, retry budget
-- [x] `services/`: создание оффера, начало аренды с lease и `202`, возврат, `advance`, `payment-result`
-- [x] `cache/`: Redis с версиями (Lua), singleflight, ограничитель чтений, L1 при отказе Redis
-- [x] `GET /orders/{id}` и список с курсором
-- [x] Интеграционные тесты идемпотентности и lease
-- [ ] Проверить ретраи и фоллбэки на отказах заглушек, когда будет `/admin/faults`
-- [ ] Прогон с отключением Redis без защиты: `READ_PROTECTION_ENABLED=false` у rental-api
-
-### rental-worker и external-stubs (друг)
-
-- [ ] `process_outbox`: `FOR UPDATE SKIP LOCKED`, экспоненциальная задержка, порядок HOLD → CLEAR
-- [ ] `advance_stuck_orders`
-- [ ] `cleanup_offers`
-- [ ] Метрики worker: `outbox_pending`, `outbox_oldest_age_seconds`, `payment_debt_open`
-- [ ] Заглушки: `POST /admin/faults` (ok, error, timeout, slow; задержка; доля ошибок) для каждого сервиса
-- [ ] Заглушки: журнал выдач для проверки «одна банка на оффер»
-
-### Не распределено
-
-- [ ] Эмулятор нагрузки (locust) и три проверки корректности — раздел 11 ADR
-- [ ] Дашборд Grafana
-- [ ] Прогоны, графики, отчёт о тестировании
