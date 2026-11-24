@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: rental-api
+    static_configs:
+      - targets: ["rental-api-1:8000", "rental-api-2:8000"]
+
+  - job_name: rental-worker
+    static_configs:
+      - targets: ["rental-worker:9100"]

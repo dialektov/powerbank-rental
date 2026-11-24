@@ -1,0 +1,9 @@
+{
+  "last_banks_threshold": 2,
+  "last_banks_increase": 1.5,
+  "offer_ttl_sec": 300,
+  "tariff_cache_ttl_sec": 600,
+  "order_lease_sec": 10,
+  "billing_time_scale": 1,
+  "subscriber_min_free_period_min": 30
+}
