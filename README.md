@@ -5,7 +5,7 @@
 ## Сервисы
 
 | Сервис | Папка | Порт |
-|---|---|---|---|
+|---|---|---|
 | rental-api (2 инстанса за nginx) | `rental_api/` | 8080 через nginx |
 | rental-worker | `rental_worker/` | 9100 (метрики) |
 | external-stubs | `external_stubs/` | 3629 |
