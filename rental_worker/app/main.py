@@ -6,8 +6,8 @@ import asyncpg
 import httpx
 from prometheus_client import start_http_server
 
-from app import jobs
-from app.settings import Settings
+from . import jobs
+from .settings import Settings
 
 log = logging.getLogger("rental-worker")
 
@@ -18,9 +18,6 @@ async def run_periodically(name: str, interval_sec: float, job: Job, ctx: jobs.C
     while True:
         try:
             await job(ctx)
-        except NotImplementedError:
-            log.warning("job %s is not implemented yet, stopping it", name)
-            return
         except Exception:
             log.exception("job %s failed", name)
         await asyncio.sleep(interval_sec)
@@ -43,9 +40,8 @@ async def main() -> None:
                 run_periodically("outbox", settings.outbox_interval_sec, jobs.process_outbox, ctx),
                 run_periodically("stuck_orders", settings.stuck_interval_sec, jobs.advance_stuck_orders, ctx),
                 run_periodically("cleanup_offers", settings.cleanup_interval_sec, jobs.cleanup_offers, ctx),
+                run_periodically("metrics", settings.metrics_interval_sec, jobs.update_metrics, ctx),
             )
-            # Не выходим, даже если все задачи остановились: иначе контейнер уйдёт в цикл рестартов.
-            await asyncio.Event().wait()
         finally:
             await db.close()
 

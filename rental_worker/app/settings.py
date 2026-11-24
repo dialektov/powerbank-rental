@@ -1,3 +1,4 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,9 +9,11 @@ class Settings(BaseSettings):
     rental_internal_url: str = "http://localhost:8081"
     stubs_url: str = "http://localhost:3629"
     metrics_port: int = 9100
+    metrics_interval_sec: float = 5.0
 
     outbox_interval_sec: float = 1.0
     outbox_batch_size: int = 100
+    outbox_concurrency: int = Field(default=4, ge=1)
     payments_timeout_sec: float = 2.0
     payments_max_backoff_sec: float = 600.0
 

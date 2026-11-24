@@ -9,3 +9,6 @@ venv/
 *.log
 .idea/
 .vscode/
+stubs.sqlite3
+stubs.sqlite3-wal
+stubs.sqlite3-shm

@@ -45,6 +45,9 @@ services:
     build: ./external_stubs
     environment:
       RENTAL_INTERNAL_URL: http://nginx:8081
+      STUBS_DB_PATH: /data/stubs.sqlite3
+    volumes:
+      - stubsdata:/data
     ports:
       - "3629:3629"
     restart: unless-stopped
@@ -112,3 +115,4 @@ services:
 
 volumes:
   pgdata:
+  stubsdata:

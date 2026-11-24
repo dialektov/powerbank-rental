@@ -49,6 +49,18 @@ docker compose run --rm --build integration-tests
 
 После пересборки rental-api перезапусти nginx (`docker compose restart nginx`): он запоминает IP инстансов при старте.
 
+## Тесты rental-worker и external-stubs
+
+Из корня репозитория в виртуальном окружении с Python 3.12 выполните:
+
+```bash
+pip install -r rental_worker/requirements.txt -r external_stubs/requirements.txt pytest
+docker compose up -d postgres
+TEST_DATABASE_URL=postgresql://rental:rental@localhost:5432/rental python -m pytest -q tests
+```
+
+Каждый тест воркера создаёт свою схему PostgreSQL и удаляет её по завершении. Без `TEST_DATABASE_URL` запускаются только проверки заглушек. Для ручного прогона настройте сбой через `POST /admin/faults`. Журнал `GET /admin/ejections` и сводка `GET /admin/payments/summary` сохраняются между перезапусками. Для сверки отдельного прогона берите разницу между показаниями до и после него.
+
 ## Договорённости между сервисами
 
 Эти правила нельзя нарушать без обсуждения: на них держатся идемпотентность и кэш.
