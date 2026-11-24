@@ -45,6 +45,9 @@ class ConfigProvider(Protocol):
 
 
 class OrdersCache(Protocol):
+    @property
+    def available(self) -> bool: ...
+
     async def get(self, order_id: UUID) -> Order | None: ...
 
     async def put(self, order: Order) -> None: ...

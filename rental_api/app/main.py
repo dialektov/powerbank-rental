@@ -3,11 +3,10 @@ import uuid
 from contextlib import asynccontextmanager
 from time import perf_counter
 
-import redis.asyncio as redis
 from fastapi import FastAPI, Request
 from prometheus_client import make_asgi_app
 
-from app import db as database
+from app import container as container_module
 from app.api import health, internal, offers, orders
 from app.errors import register_error_handlers
 from app.logging_setup import request_id_var, setup_logging
@@ -20,18 +19,12 @@ log = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings: Settings = app.state.settings
-    app.state.db = await database.connect(settings)
-    app.state.redis = redis.from_url(
-        settings.redis_url,
-        socket_timeout=settings.redis_timeout_sec,
-        socket_connect_timeout=settings.redis_timeout_sec,
-    )
-    log.info("rental-api started", extra={"instance": settings.instance_id})
+    app.state.container = await container_module.build(settings)
+    log.info("rental-api %s started", settings.instance_id)
     try:
         yield
     finally:
-        await app.state.redis.aclose()
-        await database.close(app.state.db)
+        await container_module.close(app.state.container)
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:

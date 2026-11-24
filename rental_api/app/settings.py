@@ -18,6 +18,9 @@ class Settings(BaseSettings):
 
     redis_url: str = "redis://localhost:6379/0"
     redis_timeout_sec: float = 0.02
+    order_cache_ttl_sec: int = 600
+    # Выключается только для прогона «отказ Redis без защиты» в отчёте.
+    read_protection_enabled: bool = True
 
     stubs_url: str = "http://localhost:3629"
 

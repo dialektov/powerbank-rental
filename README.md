@@ -30,13 +30,24 @@ docker compose down -v && docker compose up --build
 
 ## Тесты rental-api
 
+Unit-тесты, без БД и сети:
+
 ```bash
 cd rental_api
 python -m venv .venv
 .venv/Scripts/activate        # Linux/macOS: source .venv/bin/activate
 pip install -r requirements-dev.txt
-pytest
+pytest tests --ignore=tests/integration
 ```
+
+Интеграционные — внутри docker-сети на поднятом стенде, чтобы не зависеть от прокси и портов на машине:
+
+```bash
+docker compose up -d --build
+docker compose run --rm --build integration-tests
+```
+
+После пересборки rental-api перезапусти nginx (`docker compose restart nginx`): он запоминает IP инстансов при старте.
 
 ## Договорённости между сервисами
 
@@ -58,12 +69,14 @@ pytest
 
 ### rental-api (Иван)
 
-- [ ] `repo/`: offers, orders, payment_tasks (asyncpg, SQL)
-- [ ] `clients/`: stations, tariffs (LRU), users (фоллбэк), payments, configs; таймауты, ретраи, circuit breaker, retry budget
-- [ ] `services/`: создание оффера, начало аренды с lease и `202`, возврат, `advance`, `payment-result`
-- [ ] `cache/`: Redis с версиями (Lua), singleflight, ограничитель чтений, L1 при отказе Redis
-- [ ] `GET /orders/{id}` и список с курсором
-- [ ] Интеграционные тесты идемпотентности и lease
+- [x] `repo/`: offers, orders, payment_tasks (asyncpg, SQL)
+- [x] `clients/`: stations, tariffs (LRU), users (фоллбэк), payments, configs; таймауты, ретраи, circuit breaker, retry budget
+- [x] `services/`: создание оффера, начало аренды с lease и `202`, возврат, `advance`, `payment-result`
+- [x] `cache/`: Redis с версиями (Lua), singleflight, ограничитель чтений, L1 при отказе Redis
+- [x] `GET /orders/{id}` и список с курсором
+- [x] Интеграционные тесты идемпотентности и lease
+- [ ] Проверить ретраи и фоллбэки на отказах заглушек, когда будет `/admin/faults`
+- [ ] Прогон с отключением Redis без защиты: `READ_PROTECTION_ENABLED=false` у rental-api
 
 ### rental-worker и external-stubs (друг)
 

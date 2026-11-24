@@ -3,7 +3,10 @@ from fastapi.testclient import TestClient
 from app.main import create_app
 
 # Без контекстного менеджера TestClient не запускает lifespan, поэтому БД и Redis не нужны.
-client = TestClient(create_app())
+# До обработчика эти запросы не доходят, поэтому контейнер-заглушка не используется.
+app = create_app()
+app.state.container = object()
+client = TestClient(app)
 
 
 def test_missing_user_header_is_validation_error():

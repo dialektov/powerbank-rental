@@ -1,6 +1,11 @@
+import logging
+
+import asyncpg
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+
+log = logging.getLogger(__name__)
 
 
 class AppError(Exception):
@@ -71,7 +76,26 @@ def error_body(code: str, message: str, retryable: bool) -> dict:
     return {"error": {"code": code, "message": message, "retryable": retryable}}
 
 
+_DB_UNAVAILABLE_ERRORS = (
+    OSError,
+    asyncpg.PostgresConnectionError,
+    asyncpg.InterfaceError,
+    asyncpg.CannotConnectNowError,
+    asyncpg.TooManyConnectionsError,
+)
+
+
 def register_error_handlers(app: FastAPI) -> None:
+    async def handle_db_unavailable(_: Request, exc: Exception) -> JSONResponse:
+        log.error("database unavailable: %r", exc)
+        return JSONResponse(
+            status_code=DbUnavailable.status_code,
+            content=error_body(DbUnavailable.code, DbUnavailable.message, True),
+        )
+
+    for error_type in _DB_UNAVAILABLE_ERRORS:
+        app.add_exception_handler(error_type, handle_db_unavailable)
+
     @app.exception_handler(AppError)
     async def handle_app_error(_: Request, exc: AppError) -> JSONResponse:
         return JSONResponse(

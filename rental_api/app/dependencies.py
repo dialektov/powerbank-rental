@@ -2,17 +2,12 @@ from typing import Annotated
 
 from fastapi import Depends, Header, Request
 
-from app.db import Database
+from app.container import Container
 from app.errors import ValidationFailed
-from app.settings import Settings
 
 
-def get_settings(request: Request) -> Settings:
-    return request.app.state.settings
-
-
-def get_db(request: Request) -> Database:
-    return request.app.state.db
+def get_container(request: Request) -> Container:
+    return request.app.state.container
 
 
 def get_user_id(x_user_id: Annotated[str | None, Header()] = None) -> str:
@@ -22,3 +17,4 @@ def get_user_id(x_user_id: Annotated[str | None, Header()] = None) -> str:
 
 
 CurrentUser = Annotated[str, Depends(get_user_id)]
+Services = Annotated[Container, Depends(get_container)]
